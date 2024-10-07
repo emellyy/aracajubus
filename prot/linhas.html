@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotas de Ônibus em Aracaju com OpenRouteService</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            background-image: radial-gradient(circle at top left, #007bff, transparent),
+                              radial-gradient(circle at bottom right, #00aaff, transparent);
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #00aaff;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        /* Container para o mapa */
+        .map-container {
+            width: 80%;
+            max-width: 1200px;
+            height: 600px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Estilo para o formulário de pesquisa */
+        .search-form {
+            margin-bottom: 20px;
+            text-align: center; /* Centraliza o formulário */
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px; /* Espaço entre o input e o botão */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Detalhes animados no fundo */
+        .background-detail {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.05);
+            animation: floating 10s infinite ease-in-out;
+        }
+
+        .circle1 {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 20%;
+        }
+
+        .circle2 {
+            width: 150px;
+            height: 150px;
+            bottom: 15%;
+            right: 15%;
+        }
+
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Detalhes de fundo -->
+    <div class="background-detail circle1"></div>
+    <div class="background-detail circle2"></div>
+
+    <h1>Rotas de Ônibus em Aracaju, São Cristóvão e Nossa Senhora do Socorro</h1>
+
+    <!-- Formulário de pesquisa -->
+    <form class="search-form">
+        <input type="text" id="destination" placeholder="Digite o destino (ponto ou terminal)">
+        <button type="button" onclick="showRoute()">Mostrar Rota</button>
+    </form>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Inicializa o mapa e define a localização inicial para o SergipeTec
+        var map = L.map('map').setView([-10.9472, -37.0731], 13); // Coordenadas do SergipeTec
+
+        // Adiciona a camada do mapa
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Adiciona um marcador para o SergipeTec
+        var sergipetec = L.marker([-10.9472, -37.0731]).addTo(map)
+            .bindPopup('SergipeTec')
+            .openPopup();
+
+        // Função para adicionar uma rota ao mapa
+        function addRoute(routeCoordinates) {
+            const polyline = L.polyline(routeCoordinates, { color: 'blue' }).addTo(map);
+        }
+
+        // Função para buscar rota na OpenRouteService API
+        function fetchRoute(destinationCoords) {
+            const apiKey = 'YOUR_API_KEY';  // Substitua pela sua chave da OpenRouteService
+            const startCoords = [-10.9472, -37.0731]; // SergipeTec
+
+            const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${startCoords[1]},${startCoords[0]}&end=${destinationCoords[1]},${destinationCoords[0]}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const routeCoordinates = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
+                    addRoute(routeCoordinates);
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar rota:', error);
+                });
+        }
+
+        // Pontos de interesse (destinos de ônibus em Aracaju, São Cristóvão e Nossa Senhora do Socorro)
+        const pointsOfInterest = {
+            // Aracaju
+            "Terminal DIA": [-10.9680, -37.0633],
+            "Terminal Atalaia": [-10.9867, -37.0741],
+            "Terminal Maracaju": [-10.9470, -37.0480],
+            "Ponto Central": [-10.9550, -37.0625],
+            "Terminal Mercado": [-10.9167, -37.0573],
+            "Terminal Campus": [-10.9311, -37.0715],
+            "Ponto do Metrô": [-10.9705, -37.0348],
+            "Ponto da Rodoviária": [-10.9148, -37.0667],
+            "Praça Fausto Cardoso": [-10.9442, -37.0711],
+            "Shopping Jardins": [-10.9525, -37.0688],
+            
+            // São Cristóvão
+            "Terminal São Cristóvão": [-10.9462, -37.1762],
+            "Praça de São Francisco": [-10.9507, -37.2060],
+            "Estádio Sabino Ribeiro": [-10.9466, -37.1780],
+            
+            // Nossa Senhora do Socorro
+            "Terminal do Conjunto Marcos Freire": [-10.8883, -37.0695],
+            "Terminal do Conjunto Parque dos Faróis": [-10.8953, -37.0633],
+            "Ponto da Praça de Nossa Senhora do Socorro": [-10.8835, -37.0452],
+            "Ponto da Rodoviária de Socorro": [-10.8948, -37.0476]
+        };
+
+        // Função para mostrar a rota para o destino digitado
+        function showRoute() {
+            const destination = document.getElementById('destination').value;
+            const destinationCoordinates = pointsOfInterest[destination];
+
+            if (destinationCoordinates) {
+                // Limpa rotas anteriores
+                map.eachLayer(function (layer) {
+                    if (layer instanceof L.Polyline) {
+                        map.removeLayer(layer);
+                    }
+                });
+
+                // Busca rota na API OpenRouteService
+                fetchRoute(destinationCoordinates);
+
+                // Centraliza o mapa na rota
+                map.setView(destinationCoordinates, 13);
+            } else {
+                alert("Destino não encontrado. Por favor, insira um terminal ou ponto válido.");
+            }
+        }
+
+        // Adiciona todos os pontos de ônibus ao mapa
+        for (const point in pointsOfInterest) {
+            const coords = pointsOfInterest[point];
+            L.marker(coords).addTo(map).bindPopup(point);
+        }
+    </script>
+</body>
+</html>

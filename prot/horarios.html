@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AracajuBUS - Menu</title>
+    <title>Tabela de Horários do Transporte Público</title>
     <style>
         * {
             margin: 0;
@@ -32,7 +32,7 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(8px);
             width: 90%;
-            max-width: 450px;
+            max-width: 600px; /* Aumentei a largura máxima */
             position: relative;
             z-index: 1;
         }
@@ -45,6 +45,37 @@
             text-transform: uppercase;
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: rgba(0, 170, 255, 0.3);
+        }
+
+        #filterInput {
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #000; /* Cor do texto no campo de busca */
+        }
+
         .button {
             display: block;
             width: 100%;
@@ -54,7 +85,7 @@
             font-size: 1.2em;
             border-radius: 10px;
             text-decoration: none;
-            margin-bottom: 20px;
+            margin-top: 20px; /* Distância do campo de busca */
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
             text-transform: uppercase;
@@ -153,6 +184,32 @@
         window.onload = function() {
             playAudioExplanation();
         };
+
+        // Função para filtrar a tabela
+        function filterTable() {
+            const input = document.getElementById('filterInput').value.toLowerCase();
+            const table = document.getElementById('tabela-horarios');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(input)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+
+        // Adiciona evento de filtragem
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('filterInput').addEventListener('keyup', filterTable);
+        });
     </script>
 </head>
 <body>
@@ -161,9 +218,63 @@
     <div class="background-detail circle2"></div>
 
     <div class="container">
-        <h1>Menu</h1>
-        <a href="linhas.html" class="button">Linhas</a>
-        <a href="linhas.html" class="button">para onde você quer ir?</a>
+        <h1>Tabela de Horários</h1>
+        <input type="text" id="filterInput" placeholder="Filtrar por linha...">
+        <table>
+            <thead>
+                <tr>
+                    <th>Linha</th>
+                    <th>Ponto de Partida</th>
+                    <th>Ponto de Chegada</th>
+                    <th>Horário de Início</th>
+                    <th>Horário de Término</th>
+                    <th>Frequência (min)</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-horarios">
+                <tr>
+                    <td>1</td>
+                    <td>Terminal Maracaju</td>
+                    <td>Terminal Siqueira</td>
+                    <td>05:00</td>
+                    <td>23:00</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Terminal Siqueira</td>
+                    <td>Terminal Maracaju</td>
+                    <td>05:30</td>
+                    <td>22:30</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Bairro São Conrado</td>
+                    <td>Centro</td>
+                    <td>06:00</td>
+                    <td>21:00</td>
+                    <td>30</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Centro</td>
+                    <td>Bairro Industrial</td>
+                    <td>06:30</td>
+                    <td>22:00</td>
+                    <td>25</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Bairro 13 de Julho</td>
+                    <td>Bairro Santos Dumont</td>
+                    <td>07:00</td>
+                    <td>20:00</td>
+                    <td>35</td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="linhas.php" class="button">Linhas</a>
         <a href="horarios.html" class="button">Horários</a>
         <a href="sair.html" class="button">Sair</a>
     </div>

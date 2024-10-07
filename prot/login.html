@@ -12,43 +12,96 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            background-image: radial-gradient(circle at top left, #007bff, transparent), 
+                              radial-gradient(circle at bottom right, #00aaff, transparent);
+            color: #e0e0e0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
 
         .container {
             text-align: center;
-            background-color: #ffffff;
+            background-color: rgba(30, 30, 30, 0.9); /* Fundo semi-transparente */
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px); /* Efeito de desfoque */
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
-            color: #007bff; /* Azul */
+            color: #00aaff; /* Azul Neon */
             font-size: 2.5em;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Sombra no título */
         }
 
         .button {
-            display: inline-block;
-            padding: 15px 30px;
-            background-color: #007bff; /* Azul */
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #007bff; /* Azul vibrante */
             color: white;
             font-size: 1.2em;
-            border-radius: 5px;
+            border-radius: 10px;
             text-decoration: none;
-            margin: 20px;
-            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
         }
 
         .button:hover {
             background-color: #0056b3;
+            transform: translateY(-4px); /* Elevação ao passar o mouse */
+        }
+
+        .button:last-child {
+            background-color: #ff4d4d;
+        }
+
+        .button:last-child:hover {
+            background-color: #cc0000;
+            transform: translateY(-4px);
+        }
+
+        /* Detalhes animados no fundo */
+        .background-detail {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.05);
+            animation: floating 10s infinite ease-in-out;
+        }
+
+        .circle1 {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 20%;
+        }
+
+        .circle2 {
+            width: 150px;
+            height: 150px;
+            bottom: 15%;
+            right: 15%;
+        }
+
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
         }
     </style>
     <script>
@@ -80,9 +133,13 @@
     </script>
 </head>
 <body onload="startVoiceCommand()">
+    <!-- Detalhes de fundo -->
+    <div class="background-detail circle1"></div>
+    <div class="background-detail circle2"></div>
+
     <div class="container">
         <h1>AracajuBUS</h1>
-        <a href="login.html" class="button">Entrar</a>
+        <a href="menu.html" class="button">Entrar</a>
         <a href="logout.html" class="button">Sair</a>
     </div>
 </body>

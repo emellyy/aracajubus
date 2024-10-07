@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geolocation Data</title>
+</head>
+<body>
+    <h1>Geolocation Data</h1>
+    <button id="getLocation">Get Geolocation</button>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('getLocation').addEventListener('click', () => {
+    fetch('https://ip-geo-location.p.rapidapi.com/ip/check?format=json&language=en', {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-host': 'ip-geo-location.p.rapidapi.com',
+            'x-rapidapi-key': 'SUA_CHAVE_AQUI'
+        }
+    })
+    .then(response => {
+        console.log('HTTP Status Code:', response.status); // Adicione esta linha
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById('result').innerHTML = `
+            <ul>
+                <li>IP: ${data.ip}</li>
+                <li>Country: ${data.country}</li>
+                <li>Region: ${data.region}</li>
+                <li>City: ${data.city}</li>
+                <li>Latitude: ${data.latitude}</li>
+                <li>Longitude: ${data.longitude}</li>
+            </ul>
+        `;
+    })
+    .catch(error => {
+        document.getElementById('result').innerText = 'Error: ' + error.message;
+    });
+});
+
+    </script>
+</body>
+</html>
