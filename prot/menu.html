@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AracajuBUS - Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #007bff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1.2em;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        // Comando de voz
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+        } else {
+            alert("Seu navegador não suporta reconhecimento de voz.");
+        }
+
+        // Função para iniciar o reconhecimento de voz após o áudio
+        function startVoiceCommand() {
+            if (recognition) {
+                recognition.start();
+            }
+        }
+
+        // Função para tocar o áudio de explicação
+        function playAudioExplanation() {
+            const audio = new Audio('1005 (online-audio-converter.com).mp3'); // Caminho do áudio explicativo
+            audio.play();
+
+            // Inicia o reconhecimento de voz assim que o áudio começa
+            audio.onplay = function() {
+                console.log('Áudio iniciado');
+            };
+
+            // Quando o áudio terminar, inicia o reconhecimento de voz
+            audio.onended = function() {
+                alert("Agora você pode dar comandos por voz, diga 'tutorial' para começar o tutorial.");
+                startVoiceCommand();
+            };
+        }
+
+        // Processa o comando de voz após o áudio
+        if (recognition) {
+            recognition.onresult = function(event) {
+                const command = event.results[0][0].transcript.toLowerCase();
+                if (command.includes("tutorial")) {
+                    window.location.href = "tutorial.html"; // Redireciona para o tutorial
+                } else {
+                    alert("Comando não reconhecido. Por favor, diga 'tutorial'.");
+                }
+            };
+        }
+
+        // Inicia a reprodução do áudio ao carregar a página
+        window.onload = function() {
+            playAudioExplanation();
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>AracajuBUS - Menu</h1>
+        <a href="linhas.html" class="button">Linhas</a>
+        <a href="horarios.html" class="button">Horários</a>
+        <a href="sair.html" class="button">Sair</a>
+    </div>
+</body>
+</html>

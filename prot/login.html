@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AracajuBUS - Início</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #007bff; /* Azul */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #007bff; /* Azul */
+            color: white;
+            font-size: 1.2em;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        // Verifica suporte a reconhecimento de voz
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+
+            recognition.onstart = function() {
+                console.log('Reconhecimento de voz ativado');
+            };
+
+            recognition.onresult = function(event) {
+                const command = event.results[0][0].transcript.toLowerCase();
+                if (command.includes("entrar")) {
+                    window.location.href = "menu.html"; // Redireciona para a página de login
+                } else if (command.includes("sair")) {
+                    window.location.href = "logout.html"; // Redireciona para sair
+                }
+            };
+
+            function startVoiceCommand() {
+                recognition.start();
+            }
+        } else {
+            alert("Seu navegador não suporta reconhecimento de voz.");
+        }
+    </script>
+</head>
+<body onload="startVoiceCommand()">
+    <div class="container">
+        <h1>AracajuBUS</h1>
+        <a href="login.html" class="button">Entrar</a>
+        <a href="logout.html" class="button">Sair</a>
+    </div>
+</body>
+</html>
