@@ -32,16 +32,16 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(8px);
             width: 90%;
-            max-width: 600px; /* Aumentei a largura máxima */
+            max-width: 600px;
             position: relative;
             z-index: 1;
         }
 
         h1 {
-            color: #00aaff; /* Azul neon */
+            color: #00aaff;
             font-size: 2.5em;
             margin-bottom: 30px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Sombra */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             text-transform: uppercase;
         }
 
@@ -73,7 +73,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #ffffff;
-            color: #000; /* Cor do texto no campo de busca */
+            color: #000;
         }
 
         .button {
@@ -85,7 +85,7 @@
             font-size: 1.2em;
             border-radius: 10px;
             text-decoration: none;
-            margin-top: 20px; /* Distância do campo de busca */
+            margin-top: 20px;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
             text-transform: uppercase;
@@ -101,7 +101,6 @@
             transform: translateY(0);
         }
 
-        /* Detalhes animados no fundo */
         .background-detail {
             position: absolute;
             border-radius: 50%;
@@ -133,57 +132,13 @@
         }
     </style>
     <script>
-        // Comando de voz
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition;
+        let utterance;
 
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.lang = 'pt-BR';
-        } else {
-            alert("Seu navegador não suporta reconhecimento de voz.");
+        // Função para tocar o efeito sonoro
+        function playSoundEffect() {
+            const effect = new Audio('start-13691.mp3'); // Caminho do efeito sonoro
+            effect.play();
         }
-
-        // Função para iniciar o reconhecimento de voz após o áudio
-        function startVoiceCommand() {
-            if (recognition) {
-                recognition.start();
-            }
-        }
-
-        // Função para tocar o áudio de explicação
-        function playAudioExplanation() {
-            const audio = new Audio('1005 (online-audio-converter.com).mp3'); // Caminho do áudio explicativo
-            audio.play();
-
-            // Inicia o reconhecimento de voz assim que o áudio começa
-            audio.onplay = function() {
-                console.log('Áudio iniciado');
-            };
-
-            // Quando o áudio terminar, inicia o reconhecimento de voz
-            audio.onended = function() {
-                alert("Agora você pode dar comandos por voz, diga 'tutorial' para começar o tutorial.");
-                startVoiceCommand();
-            };
-        }
-
-        // Processa o comando de voz após o áudio
-        if (recognition) {
-            recognition.onresult = function(event) {
-                const command = event.results[0][0].transcript.toLowerCase();
-                if (command.includes("tutorial")) {
-                    window.location.href = "tutorial.html"; // Redireciona para o tutorial
-                } else {
-                    alert("Comando não reconhecido. Por favor, diga 'tutorial'.");
-                }
-            };
-        }
-
-        // Inicia a reprodução do áudio ao carregar a página
-        window.onload = function() {
-            playAudioExplanation();
-        };
 
         // Função para filtrar a tabela
         function filterTable() {
@@ -206,9 +161,44 @@
             }
         }
 
-        // Adiciona evento de filtragem
+        // Função para ler a tabela em voz alta
+        function readTable() {
+            const table = document.getElementById('tabela-horarios');
+            const rows = table.getElementsByTagName('tr');
+            let textToRead = "Aqui estão os horários das linhas de ônibus. ";
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const rowText = `Linha ${cells[0].textContent}, partindo de ${cells[1].textContent} para ${cells[2].textContent}. Início às ${cells[3].textContent} e término às ${cells[4].textContent}. Frequência de ${cells[5].textContent} minutos. `;
+                textToRead += rowText;
+            }
+
+            utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.lang = 'pt-BR';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Função para interromper a leitura da tabela
+        function stopReadingTable() {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        // Executar ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
+            playSoundEffect(); // Tocar som ao carregar
+            readTable(); // Ler a tabela em voz alta
+
             document.getElementById('filterInput').addEventListener('keyup', filterTable);
+
+            // Interromper a leitura quando o usuário sai da página ou muda de aba
+            window.addEventListener('beforeunload', stopReadingTable);
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopReadingTable();
+                }
+            });
         });
     </script>
 </head>
@@ -274,7 +264,7 @@
                 </tr>
             </tbody>
         </table>
-        <a href="linhas.php" class="button">Linhas</a>
+        <a href="linhas.html" class="button">Linhas</a>
         <a href="horarios.html" class="button">Horários</a>
         <a href="sair.html" class="button">Sair</a>
     </div>

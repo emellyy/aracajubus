@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AracajuBUS - Início</title>
     <style>
+        /* Estilos mantidos como antes */
         * {
             margin: 0;
             padding: 0;
@@ -130,9 +131,21 @@
         } else {
             alert("Seu navegador não suporta reconhecimento de voz.");
         }
+
+        // Função para reproduzir o som de inicialização
+        function playStartupSound() {
+            const audio = new Audio('llv-132676.mp3'); // Caminho do arquivo de som
+            audio.play();
+        }
+
+        // Função executada ao carregar a página
+        function onPageLoad() {
+            startVoiceCommand();  // Inicia o reconhecimento de voz
+            playStartupSound();   // Reproduz o som de inicialização
+        }
     </script>
 </head>
-<body onload="startVoiceCommand()">
+<body onload="onPageLoad()">
     <!-- Detalhes de fundo -->
     <div class="background-detail circle1"></div>
     <div class="background-detail circle2"></div>

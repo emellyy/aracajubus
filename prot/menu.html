@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AracajuBUS - Menu</title>
     <style>
+        /* Estilos mantidos como antes */
         * {
             margin: 0;
             padding: 0;
@@ -102,57 +103,78 @@
         }
     </style>
     <script>
-        // Comando de voz
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition;
+    // Comando de voz
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
 
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.lang = 'pt-BR';
-        } else {
-            alert("Seu navegador não suporta reconhecimento de voz.");
-        }
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'pt-BR';
+        recognition.continuous = true; // Torna o reconhecimento de voz contínuo
+        recognition.interimResults = false; // Só aceita resultados finais
+    } else {
+        alert("Seu navegador não suporta reconhecimento de voz.");
+    }
 
-        // Função para iniciar o reconhecimento de voz após o áudio
-        function startVoiceCommand() {
-            if (recognition) {
-                recognition.start();
-            }
-        }
-
-        // Função para tocar o áudio de explicação
-        function playAudioExplanation() {
-            const audio = new Audio('1005 (online-audio-converter.com).mp3'); // Caminho do áudio explicativo
-            audio.play();
-
-            // Inicia o reconhecimento de voz assim que o áudio começa
-            audio.onplay = function() {
-                console.log('Áudio iniciado');
-            };
-
-            // Quando o áudio terminar, inicia o reconhecimento de voz
-            audio.onended = function() {
-                alert("Agora você pode dar comandos por voz, diga 'tutorial' para começar o tutorial.");
-                startVoiceCommand();
-            };
-        }
-
-        // Processa o comando de voz após o áudio
+    // Função para iniciar o reconhecimento de voz
+    function startVoiceRecognition() {
         if (recognition) {
-            recognition.onresult = function(event) {
-                const command = event.results[0][0].transcript.toLowerCase();
-                if (command.includes("tutorial")) {
-                    window.location.href = "tutorial.html"; // Redireciona para o tutorial
-                } else {
-                    alert("Comando não reconhecido. Por favor, diga 'tutorial'.");
-                }
-            };
+            recognition.start();
         }
+    }
 
-        // Inicia a reprodução do áudio ao carregar a página
-        window.onload = function() {
-            playAudioExplanation();
+    // Função para processar o comando de voz
+    function processVoiceCommand(command) {
+        if (command.includes("onde eu quero ir")) {
+            window.location.href = "linhas.html"; // Redireciona para linhas
+        } else if (command.includes("linhas")) {
+            window.location.href = "horarios.html"; // Redireciona para linhas
+        } else if (command.includes("horários")) {
+            window.location.href = "horarios.html"; // Redireciona para horários
+        } else {
+            alert("Comando não reconhecido. Por favor, diga 'onde eu quero ir', 'linhas' ou 'horários'.");
+        }
+    }
+
+    // Inicia o reconhecimento de voz e o efeito sonoro ao carregar a página
+    window.onload = function() {
+        playSoundEffect(); // Toca o efeito sonoro
+        startVoiceRecognition(); // Inicia o reconhecimento de voz contínuo
+    };
+
+    // Processa o comando de voz
+    if (recognition) {
+        recognition.onresult = function(event) {
+            const command = event.results[0][0].transcript.toLowerCase();
+            console.log("Comando recebido: ", command);
+            
+            // Processa o comando
+            processVoiceCommand(command);
+
+            // Reinicia o reconhecimento após processar o comando
+            recognition.stop();
+            recognition.start();
         };
+
+        // Reinicia o reconhecimento de voz se ele parar
+        recognition.onend = function() {
+            recognition.start();
+        };
+
+        // Captura erros e tenta reiniciar o reconhecimento
+        recognition.onerror = function(event) {
+            console.error("Erro de reconhecimento de voz: ", event.error);
+            recognition.stop();
+            recognition.start();
+        };
+    }
+
+    // Função para tocar o efeito sonoro
+    function playSoundEffect() {
+        const effect = new Audio('start-13691.mp3'); // Caminho do efeito sonoro
+        effect.play();
+    }
+
     </script>
 </head>
 <body>
@@ -162,10 +184,11 @@
 
     <div class="container">
         <h1>Menu</h1>
-        <a href="linhas.html" class="button">Linhas</a>
-        <a href="linhas.html" class="button">para onde você quer ir?</a>
-        <a href="horarios.html" class="button">Horários</a>
+        <a href="linhas.html" class="button">Para onde você quer ir?</a>
+        <a href="horarios.html" class="button">Linhas e Horários</a>
         <a href="sair.html" class="button">Sair</a>
     </div>
 </body>
+<script src="voiceRecognition.js"></script>
+
 </html>
