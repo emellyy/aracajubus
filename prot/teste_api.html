@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados Meteorológicos</title>
+</head>
+<body>
+    <h1>Clima Atual em Londres</h1>
+    <div id="weather"></div>
+    
+    <script>
+        const apiKey = 'aa9926944e65acc05e56bd16c5bc6b2f';
+        const lat = '51.5074';
+        const lon = '-0.1278';
+        const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily&appid=${apiKey}&units=metric`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na chamada da API');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Verifique a resposta da API
+                const weather = data.current;
+                document.getElementById('weather').innerHTML = `
+                    <p>Temperatura: ${weather.temp} °C</p>
+                    <p>Umidade: ${weather.humidity}%</p>
+                    <p>Condições: ${weather.weather[0].description}</p>
+                `;
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('weather').innerText = 'Dados meteorológicos não encontrados.';
+            });
+    </script>
+</body>
+</html>
